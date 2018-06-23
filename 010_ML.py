@@ -34,6 +34,20 @@ def data_preprocessing(test_train_ration=0.05):
     df_test.loc[df_test['NAME_CONTRACT_TYPE']=='Revolving loans','NAME_CONTRACT_TYPE_Tencode'] \
     = df_train[df_train['NAME_CONTRACT_TYPE']=='Revolving loans'].TARGET.sum()/df_train.TARGET.sum()
     
+    df_train.loc[df_train['CODE_GENDER']=='F','CODE_GENDER_Tencode'] \
+    = df_train[df_train['CODE_GENDER']=='F'].TARGET.sum()/df_train.TARGET.sum()  
+    df_train.loc[df_train['CODE_GENDER']=='M','CODE_GENDER_Tencode'] \
+    = df_train[df_train['CODE_GENDER']=='M'].TARGET.sum()/df_train.TARGET.sum()  
+    df_train.loc[df_train['CODE_GENDER']=='XNA','CODE_GENDER_Tencode'] \
+    = df_train[df_train['CODE_GENDER']=='XNA'].TARGET.sum()/df_train.TARGET.sum() 
+    
+    df_test.loc[df_test['CODE_GENDER']=='F','CODE_GENDER_Tencode'] \
+    = df_train[df_train['CODE_GENDER']=='F'].TARGET.sum()/df_train.TARGET.sum()  
+    df_test.loc[df_test['CODE_GENDER']=='M','CODE_GENDER_Tencode'] \
+    = df_train[df_train['CODE_GENDER']=='M'].TARGET.sum()/df_train.TARGET.sum()  
+    df_test.loc[df_test['CODE_GENDER']=='XNA','CODE_GENDER_Tencode'] \
+    = df_train[df_train['CODE_GENDER']=='XNA'].TARGET.sum()/df_train.TARGET.sum() 
+    
     
     df_train_decoded = df_train
     df_test_decoded= df_test
@@ -182,7 +196,7 @@ def LDA():
     return clf,y_lda_te
     
 def model_pred(clf):
-   # clf=model_f2
+    clf=model_f2
     X_sub = pd.read_csv('df_test_decoded.csv',encoding='iso-8859-1')
     if clf!=model_f2:
         X_sub = X_sub.fillna(-999999999)
@@ -190,17 +204,18 @@ def model_pred(clf):
     y=clf.predict(X_sub)
 
     Y_submit=pd.DataFrame()
-    Y_submit = pd.concat([df_id_submit, pd.DataFrame(y)], axis=1)
+    Y_submit = pd.concat([df_id_submit[1], pd.DataFrame(y)], axis=1)
+    Y_submit.index =Y_submit[1] 
 # =============================================================================
     #Y_submit.columns=['SK_ID_CURR','TARGET']
     #Y_submit=Y_submit.groupby(['SK_ID_CURR'])['TARGET'].mean()
     df_best_submit = pd.read_csv('1529354417_submit.csv')
     df_best_submit.index = df_best_submit.SK_ID_CURR
     df_best_submit = pd.concat([df_best_submit,Y_submit],axis=1)
-    df_best_submit.columns=['SK_ID_CURR','TARGET1','TARGET']
+    df_best_submit.columns=['SK_ID_CURR','TARGET1','SK_ID_CURR1','TARGET']
     ix = df_best_submit[df_best_submit['TARGET'].isnull()].index.tolist()
     df_best_submit.loc[ix,'TARGET'] = df_best_submit.loc[ix,'TARGET1']
-    df_best_submit = df_best_submit.drop(['TARGET1'],axis=1)
+    df_best_submit = df_best_submit.drop(['TARGET1','SK_ID_CURR1'],axis=1)
     df_best_submit.to_csv('{}_submit.csv'.format(str(round(time.mktime((datetime.datetime.now().timetuple()))))),index=False)
 # =============================================================================
     return df_best_submit
