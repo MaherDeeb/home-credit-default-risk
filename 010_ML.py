@@ -19,25 +19,8 @@ import lightgbm as lgb
 #1.1. load the training set and the training lables
 def data_preprocessing(test_train_ration=0.05):
     
-    df_train = pd.read_csv('df_train_bureau.csv',encoding='iso-8859-1')
-    df_test = pd.read_csv('df_test_bureau.csv',encoding='iso-8859-1')
-    #Y_train=pd.read_csv('Y_train_o.csv',encoding='iso-8859-1',header=None)
-    
-    for col_i in df_train.columns:
-        
-        values_all = df_train[col_i].unique()
-        
-        if len(values_all)<100 and col_i != 'TARGET':
-        
-            for values_i in values_all:
-            
-            
-                df_train.loc[df_train[col_i]==values_i,col_i+'_Tencode'] \
-                = df_train[df_train[col_i]==values_i].TARGET.sum()/ df_train.TARGET.sum() 
-                
-                df_test.loc[df_test[col_i]==values_i,col_i+'_Tencode'] \
-                = df_train[df_train[col_i]==values_i].TARGET.sum()/ df_train.TARGET.sum()
-    
+    df_train = pd.read_csv('df_train.csv')
+    df_test = pd.read_csv('df_test.csv')
     
     df_train_decoded = df_train
     df_test_decoded= df_test
@@ -55,8 +38,13 @@ def data_preprocessing(test_train_ration=0.05):
 
     Y_train = df_train_decoded['TARGET']
     SK_ID_CURR_test = df_test_decoded['SK_ID_CURR']
-    df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','SK_ID_BUREAU','TARGET'],axis=1)
-    df_test_decoded = df_test_decoded.drop(['SK_ID_CURR','SK_ID_BUREAU'],axis=1)
+    
+    
+    #df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','SK_ID_BUREAU','TARGET'],axis=1)
+    #df_test_decoded = df_test_decoded.drop(['SK_ID_CURR','SK_ID_BUREAU'],axis=1)
+    
+    df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','TARGET'],axis=1)
+    df_test_decoded = df_test_decoded.drop(['SK_ID_CURR'],axis=1)
     
     
     

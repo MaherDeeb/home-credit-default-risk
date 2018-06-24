@@ -35,3 +35,21 @@ df_train.loc[df_train['FLAG_OWN_REALTY']==1,'FLAG_OWN_REALTY_Tencode'] \
  
 
 #df_test = pd.read_csv('df_test_bureau.csv',encoding='iso-8859-1')
+
+    df_train = pd.read_csv('df_train.csv')
+    df_test = pd.read_csv('df_test.csv')
+    
+    for col_i in df_train.columns:
+        
+        values_all = df_train[col_i].unique()
+        
+        if len(values_all)<100 and col_i != 'TARGET':
+        
+            for values_i in values_all:
+            
+            
+                df_train.loc[df_train[col_i]==values_i,col_i+'_Tencode'] \
+                = df_train[df_train[col_i]==values_i].TARGET.sum()/ df_train.TARGET.sum() 
+                
+                df_test.loc[df_test[col_i]==values_i,col_i+'_Tencode'] \
+                = df_train[df_train[col_i]==values_i].TARGET.sum()/ df_train.TARGET.sum()
