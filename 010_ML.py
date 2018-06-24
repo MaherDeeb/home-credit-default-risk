@@ -122,7 +122,7 @@ def lgb_light():
     params = {
         'objective': 'binary',
         'boosting': 'dart',
-        'learning_rate': 0.1 ,
+        'learning_rate': 0.01 ,
         'verbose': 0,
         'num_leaves': 31,
         'bagging_fraction': 0.95,
