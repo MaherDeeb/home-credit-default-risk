@@ -21,12 +21,10 @@ df_train = pd.concat([df_bureau,df_train],
                      axis=1, join_axes=[df_bureau.index])
 
 df_train = df_train[~df_train['TARGET'].isnull()]
-Y_train = df_train.TARGET
 
 df_train.to_csv('df_train_bureau.csv',index=False) 
-Y_train.to_csv('Y_train_o.csv',index=False)
 
-del df_train,Y_train
+del df_train
 
 df_test = pd.read_csv('df_test.csv',encoding='iso-8859-1')
 
@@ -41,10 +39,7 @@ del df_bureau
 
 df_test = df_test[~df_test['SK_ID_CURR'].isnull()]
 
-df_id_submit=df_test.SK_ID_CURR
-
 
 df_test.to_csv('df_test_bureau.csv',index=False) 
-df_id_submit.to_csv('df_id_submit.csv',index=False)
 
 

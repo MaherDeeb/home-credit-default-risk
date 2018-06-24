@@ -19,8 +19,8 @@ import lightgbm as lgb
 #1.1. load the training set and the training lables
 def data_preprocessing(test_train_ration=0.05):
     
-    df_train = pd.read_csv('df_train.csv')
-    df_test = pd.read_csv('df_test.csv')
+    df_train = pd.read_csv('df_train_bureau.csv')
+    df_test = pd.read_csv('df_test_bureau.csv')
     
     df_train_decoded = df_train
     df_test_decoded= df_test
@@ -40,11 +40,11 @@ def data_preprocessing(test_train_ration=0.05):
     SK_ID_CURR_test = df_test_decoded['SK_ID_CURR']
     
     
-    #df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','SK_ID_BUREAU','TARGET'],axis=1)
-    #df_test_decoded = df_test_decoded.drop(['SK_ID_CURR','SK_ID_BUREAU'],axis=1)
+    df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','SK_ID_BUREAU','TARGET'],axis=1)
+    df_test_decoded = df_test_decoded.drop(['SK_ID_CURR','SK_ID_BUREAU'],axis=1)
     
-    df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','TARGET'],axis=1)
-    df_test_decoded = df_test_decoded.drop(['SK_ID_CURR'],axis=1)
+    #df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','TARGET'],axis=1)
+    #df_test_decoded = df_test_decoded.drop(['SK_ID_CURR'],axis=1)
     
     
     
@@ -187,7 +187,7 @@ def model_pred(clf):
 # =============================================================================
     #Y_submit.columns=['SK_ID_CURR','TARGET']
     #Y_submit=Y_submit.groupby(['SK_ID_CURR'])['TARGET'].mean()
-    df_best_submit = pd.read_csv('1529354417_submit.csv')
+    df_best_submit = pd.read_csv('1529870832_submit.csv')
     df_best_submit.index = df_best_submit.SK_ID_CURR
     df_best_submit = pd.concat([df_best_submit,Y_submit],axis=1)
     df_best_submit.columns=['SK_ID_CURR','TARGET1','SK_ID_CURR1','TARGET']
