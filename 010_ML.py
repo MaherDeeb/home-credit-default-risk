@@ -23,30 +23,20 @@ def data_preprocessing(test_train_ration=0.05):
     df_test = pd.read_csv('df_test_bureau.csv',encoding='iso-8859-1')
     #Y_train=pd.read_csv('Y_train_o.csv',encoding='iso-8859-1',header=None)
     
-    
-    df_train.loc[df_train['NAME_CONTRACT_TYPE']=='Cash loans','NAME_CONTRACT_TYPE_Tencode'] \
-    = df_train[df_train['NAME_CONTRACT_TYPE']=='Cash loans'].TARGET.sum()/ df_train.TARGET.sum() 
-    df_train.loc[df_train['NAME_CONTRACT_TYPE']=='Revolving loans','NAME_CONTRACT_TYPE_Tencode'] \
-    = df_train[df_train['NAME_CONTRACT_TYPE']=='Revolving loans'].TARGET.sum()/df_train.TARGET.sum()
-    
-    df_test.loc[df_test['NAME_CONTRACT_TYPE']=='Cash loans','NAME_CONTRACT_TYPE_Tencode'] \
-    = df_train[df_train['NAME_CONTRACT_TYPE']=='Cash loans'].TARGET.sum()/ df_train.TARGET.sum() 
-    df_test.loc[df_test['NAME_CONTRACT_TYPE']=='Revolving loans','NAME_CONTRACT_TYPE_Tencode'] \
-    = df_train[df_train['NAME_CONTRACT_TYPE']=='Revolving loans'].TARGET.sum()/df_train.TARGET.sum()
-    
-    df_train.loc[df_train['CODE_GENDER']=='F','CODE_GENDER_Tencode'] \
-    = df_train[df_train['CODE_GENDER']=='F'].TARGET.sum()/df_train.TARGET.sum()  
-    df_train.loc[df_train['CODE_GENDER']=='M','CODE_GENDER_Tencode'] \
-    = df_train[df_train['CODE_GENDER']=='M'].TARGET.sum()/df_train.TARGET.sum()  
-    df_train.loc[df_train['CODE_GENDER']=='XNA','CODE_GENDER_Tencode'] \
-    = df_train[df_train['CODE_GENDER']=='XNA'].TARGET.sum()/df_train.TARGET.sum() 
-    
-    df_test.loc[df_test['CODE_GENDER']=='F','CODE_GENDER_Tencode'] \
-    = df_train[df_train['CODE_GENDER']=='F'].TARGET.sum()/df_train.TARGET.sum()  
-    df_test.loc[df_test['CODE_GENDER']=='M','CODE_GENDER_Tencode'] \
-    = df_train[df_train['CODE_GENDER']=='M'].TARGET.sum()/df_train.TARGET.sum()  
-    df_test.loc[df_test['CODE_GENDER']=='XNA','CODE_GENDER_Tencode'] \
-    = df_train[df_train['CODE_GENDER']=='XNA'].TARGET.sum()/df_train.TARGET.sum() 
+    for col_i in df_train.columns:
+        
+        values_all = df_train[col_i].unique()
+        
+        if len(values_all)<100 and col_i != 'TARGET':
+        
+            for values_i in values_all:
+            
+            
+                df_train.loc[df_train[col_i]==values_i,col_i+'_Tencode'] \
+                = df_train[df_train[col_i]==values_i].TARGET.sum()/ df_train.TARGET.sum() 
+                
+                df_test.loc[df_test[col_i]==values_i,col_i+'_Tencode'] \
+                = df_train[df_train[col_i]==values_i].TARGET.sum()/ df_train.TARGET.sum()
     
     
     df_train_decoded = df_train
