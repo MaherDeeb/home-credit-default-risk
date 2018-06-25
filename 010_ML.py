@@ -19,8 +19,8 @@ import lightgbm as lgb
 #1.1. load the training set and the training lables
 def data_preprocessing(test_train_ration=0.05):
     
-    df_train = pd.read_csv('df_train_pa.csv')
-    df_test = pd.read_csv('df_test_pa.csv')
+    df_train = pd.read_csv('df_train_bureau.csv')
+    df_test = pd.read_csv('df_test_bureau.csv')
     
     df_train_decoded = df_train
     df_test_decoded= df_test
@@ -33,22 +33,22 @@ def data_preprocessing(test_train_ration=0.05):
         df_train_decoded[col_i] = df_total.loc[range(df_train.shape[0]),col_i].values
         df_test_decoded[col_i] =  df_total.loc[range(df_train.shape[0],df_train.shape[0]+df_test.shape[0]),col_i].values
         
-    df_train_decoded = df_train_decoded.groupby(['SK_ID_CURR'], axis=0)[df_train_decoded.columns].mean()
-    df_test_decoded = df_test_decoded.groupby(['SK_ID_CURR'], axis=0)[df_test_decoded.columns].mean()
+    #df_train_decoded = df_train_decoded.groupby(['SK_ID_CURR'], axis=0)[df_train_decoded.columns].sum()
+    #df_test_decoded = df_test_decoded.groupby(['SK_ID_CURR'], axis=0)[df_test_decoded.columns].sum()
 
     Y_train = df_train_decoded['TARGET']
     SK_ID_CURR_test = df_test_decoded['SK_ID_CURR']
     
     
-    df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','SK_ID_PREV','TARGET'],axis=1)
-    df_test_decoded = df_test_decoded.drop(['SK_ID_CURR','SK_ID_PREV'],axis=1)
+    #df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','SK_ID_PREV','TARGET'],axis=1)
+    #df_test_decoded = df_test_decoded.drop(['SK_ID_CURR','SK_ID_PREV'],axis=1)
     
     #df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','SK_ID_BUREAU','TARGET'],axis=1)
-    #df_test_decoded = df_test_decoded.drop(['SK_ID_CURR','SK_ID_BUREAU'],axis=1)
+   # df_test_decoded = df_test_decoded.drop(['SK_ID_CURR','SK_ID_BUREAU'],axis=1)
     
     
-    #df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','TARGET'],axis=1)
-    #df_test_decoded = df_test_decoded.drop(['SK_ID_CURR'],axis=1)
+    df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','TARGET'],axis=1)
+    df_test_decoded = df_test_decoded.drop(['SK_ID_CURR'],axis=1)
     
     
     
@@ -267,7 +267,7 @@ def model_pred(clf):
 
 
     
-#data_preprocessing(test_train_ration=0.2)
+data_preprocessing(test_train_ration=0.2)
 
 #clf_rf, err_cv,y_rf_te=model_train_RF()
 model_f2,y_lgb_te2,err_cv_lgb2=lgb_light()
