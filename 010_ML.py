@@ -217,15 +217,15 @@ def model_pred(clf):
     Y_submit = pd.concat([df_id_submit[1], pd.DataFrame(y)], axis=1)
     Y_submit.index =Y_submit[1] 
 # =============================================================================
-    #Y_submit.columns=['SK_ID_CURR','TARGET']
-    #Y_submit=Y_submit.groupby(['SK_ID_CURR'])['TARGET'].mean()
+    Y_submit.columns=['SK_ID_CURR','TARGET']
+    Y_submit=Y_submit.groupby(['SK_ID_CURR'])['TARGET'].mean()
     df_best_submit = pd.read_csv('1529870832_submit.csv')
     df_best_submit.index = df_best_submit.SK_ID_CURR
     df_best_submit = pd.concat([df_best_submit,Y_submit],axis=1)
-    df_best_submit.columns=['SK_ID_CURR','TARGET1','SK_ID_CURR1','TARGET']
+    df_best_submit.columns=['SK_ID_CURR','TARGET1','TARGET']
     ix = df_best_submit[df_best_submit['TARGET'].isnull()].index.tolist()
     df_best_submit.loc[ix,'TARGET'] = df_best_submit.loc[ix,'TARGET1']
-    df_best_submit = df_best_submit.drop(['TARGET1','SK_ID_CURR1'],axis=1)
+    df_best_submit = df_best_submit.drop(['TARGET1'],axis=1)
     df_best_submit.to_csv('{}_submit.csv'.format(str(round(time.mktime((datetime.datetime.now().timetuple()))))),index=False)
 # =============================================================================
     return df_best_submit
