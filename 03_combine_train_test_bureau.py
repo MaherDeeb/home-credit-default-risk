@@ -43,6 +43,6 @@ del df_bureau
 df_test_2 = df_test_1[~df_test_1['SK_ID_CURR'].isnull()]
 
 
-df_test.to_csv('df_test_bureau.csv',index=False) 
+df_test_2.to_csv('df_test_bureau.csv',index=False) 
 
 
