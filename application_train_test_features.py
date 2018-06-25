@@ -6,7 +6,7 @@ Created on Sun Jun 24 17:45:26 2018
 """
 
 import pandas as pd
-
+import numpy as np
 data_path = 'D:/000_Projects_2018/0002_Development/Kaggle/home-credit-default-risk/data/'
 
 def _extract_features(df):
@@ -17,18 +17,18 @@ def _extract_features(df):
     df['loan-good'] = df.AMT_CREDIT - df.AMT_GOODS_PRICE
     df['loanVSgood'] = df.AMT_CREDIT/df.AMT_GOODS_PRICE
     
-    df['EMPLOYEDvsBIRTH'] = df.DAYS_BIRTH/df.DAYS_EMPLOYED
-    df['REGISTRATIONvsBIRTH'] = df.DAYS_BIRTH/df.DAYS_REGISTRATION
-    df['PUBLISHvsBIRTH'] = df.DAYS_BIRTH/df.DAYS_ID_PUBLISH
-    df['PUBLISHvsEMPLOYED'] = df.DAYS_EMPLOYED/df.DAYS_ID_PUBLISH
-    df['PUBLISHvsREGISTRATION'] = df.DAYS_REGISTRATION/df.DAYS_ID_PUBLISH
-    df['EMPLOYEDvsREGISTRATION'] = df.DAYS_REGISTRATION/df.DAYS_EMPLOYED
+    df['EMPLOYEDvsBIRTH'] = df.DAYS_BIRTH/(df.DAYS_EMPLOYED-1)
+    df['REGISTRATIONvsBIRTH'] = df.DAYS_BIRTH/(df.DAYS_REGISTRATION-1)
+    df['PUBLISHvsBIRTH'] = df.DAYS_BIRTH/(df.DAYS_ID_PUBLISH-1)
+    df['PUBLISHvsEMPLOYED'] = df.DAYS_EMPLOYED/(df.DAYS_ID_PUBLISH-1)
+    df['PUBLISHvsREGISTRATION'] = df.DAYS_REGISTRATION/(df.DAYS_ID_PUBLISH-1)
+    df['EMPLOYEDvsREGISTRATION'] = df.DAYS_REGISTRATION/(df.DAYS_EMPLOYED-1)
     df.OWN_CAR_AGE = df.OWN_CAR_AGE.fillna(0)
     df['OWN_CAR_AGEvsBIRTH'] = df.OWN_CAR_AGE/df.DAYS_BIRTH
-    df['OWN_CAR_AGEvsREGISTRATION'] = df.OWN_CAR_AGE/df.DAYS_REGISTRATION
-    df['OWN_CAR_AGEvsPUBLISH'] = df.OWN_CAR_AGE/df.DAYS_ID_PUBLISH
-    df['OWN_CAR_AGEvsEMPLOYED'] = df.OWN_CAR_AGE/df.DAYS_EMPLOYED
-    df['OWN_CAR_AGEvsloanVSANNUITY_y'] = df.OWN_CAR_AGE/df.loanVSANNUITY_y
+    df['OWN_CAR_AGEvsREGISTRATION'] = df.OWN_CAR_AGE/(df.DAYS_REGISTRATION-1)
+    df['OWN_CAR_AGEvsPUBLISH'] = df.OWN_CAR_AGE/(df.DAYS_ID_PUBLISH-1)
+    df['OWN_CAR_AGEvsEMPLOYED'] = df.OWN_CAR_AGE/(df.DAYS_EMPLOYED-1)
+    df['OWN_CAR_AGEvsloanVSANNUITY_y'] = df.OWN_CAR_AGE/(df.loanVSANNUITY_y-1)
     
     df['sum_FALG_1'] = df.FLAG_EMP_PHONE + df.FLAG_WORK_PHONE
     df['sum_FALG_2'] = df.FLAG_CONT_MOBILE + df.FLAG_PHONE + df.FLAG_EMAIL
@@ -191,10 +191,30 @@ df_train = pd.read_csv(data_path+'application_train.csv')
 
 df_train = _extract_features(df_train)
 
+col_i=list(df_train.columns)
+
+for col in col_i:
+    try:
+        if df_train[col].isin([ np.inf, -np.inf]).sum()>0:
+            
+            print(col,df_train[col].isin([np.nan, np.inf, -np.inf]).sum())
+    except:
+        print('does not work')
+
 df_test = pd.read_csv(data_path+'application_test.csv')
 df_test.insert(0, 'id', range(len(df_test['OWN_CAR_AGE'])))
 df_test = _extract_features(df_test)
 df_test=df_test.drop(['id'],axis=1)
 
+col_i=list(df_test.columns)
+
+for col in col_i:
+    try:
+        if df_test[col].isin([ np.inf, -np.inf]).sum()>0:
+            
+            print(col,df_test[col].isin([np.nan, np.inf, -np.inf]).sum())
+    except:
+        print('does not work')
+        
 df_test.to_csv('df_test.csv',index=False)
 df_train.to_csv('df_train.csv',index=False)
