@@ -142,21 +142,21 @@ def lgb_light():
         'boosting': 'dart',
         'learning_rate': 0.1 ,
         'verbose': 0,
-        'num_leaves': 31,
+        'num_leaves': 300,
         'bagging_fraction': 0.95,
         'bagging_freq': 1,
         'bagging_seed': 1,
         'feature_fraction': 0.5,
         'min_data_in_leaf': 30,
         'feature_fraction_seed': 1,
-        'max_bin': 550,
+        'max_bin': 250,
         'max_depth': -1,
-        'num_rounds': 1000,
+        'num_rounds': 2000,
         'metric' : 'auc',
         'gpu_use_dp': True,
         'save_binary': True,
-        'scale_pos_weight': 2,
-        'drop_rate': 0.02
+        #'scale_pos_weight': 2,
+        #'drop_rate': 0.02
     }
 
     model_f2 = lgb.train(params, train_set=d_train_final,  valid_sets=watchlist_final, verbose_eval=5)
