@@ -11,6 +11,14 @@ data_path = 'D:/000_Projects_2018/0002_Development/Kaggle/home-credit-default-ri
 
 def _extract_features(df):
     
+    df_ohc = pd.get_dummies(df.NAME_CONTRACT_TYPE)
+    df = pd.concat([df,df_ohc],axis = 1)
+    df_ohc = pd.get_dummies(df.NAME_TYPE_SUITE)
+    df = pd.concat([df,df_ohc],axis = 1)
+    df_ohc = pd.get_dummies(df.NAME_INCOME_TYPE)
+    df = pd.concat([df,df_ohc],axis = 1)
+    
+    
     df['incomeVSloan'] = df.AMT_INCOME_TOTAL/df.AMT_CREDIT
     df['incomeVSANNUITY'] = df.AMT_INCOME_TOTAL/df.AMT_ANNUITY
     df['loanVSANNUITY_y'] = df.AMT_CREDIT/df.AMT_ANNUITY
