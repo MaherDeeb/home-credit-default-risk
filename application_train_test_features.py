@@ -17,6 +17,19 @@ def _extract_features(df):
     df = pd.concat([df,df_ohc],axis = 1)
     df_ohc = pd.get_dummies(df.NAME_INCOME_TYPE)
     df = pd.concat([df,df_ohc],axis = 1)
+    df_ohc = pd.get_dummies(df.NAME_EDUCATION_TYPE)
+    df = pd.concat([df,df_ohc],axis = 1)
+    df_ohc = pd.get_dummies(df.NAME_FAMILY_STATUS)
+    df = pd.concat([df,df_ohc],axis = 1)
+    df_ohc = pd.get_dummies(df.NAME_HOUSING_TYPE)
+    df = pd.concat([df,df_ohc],axis = 1)
+    df_ohc = pd.get_dummies(df.OCCUPATION_TYPE)
+    df = pd.concat([df,df_ohc],axis = 1)
+    df_ohc = pd.get_dummies(df.WEEKDAY_APPR_PROCESS_START)
+    df = pd.concat([df,df_ohc],axis = 1)
+    df_ohc = pd.get_dummies(df.ORGANIZATION_TYPE)
+    df = pd.concat([df,df_ohc],axis = 1)    
+    
     
     
     df['incomeVSloan'] = df.AMT_INCOME_TOTAL/df.AMT_CREDIT
@@ -223,6 +236,15 @@ for col in col_i:
             print(col,df_test[col].isin([np.nan, np.inf, -np.inf]).sum())
     except:
         print('does not work')
+        
+train_column = list(df_train.columns)
+test_column = list(df_test.columns)
+
+for col_i in train_column:
+    if col_i not in test_column:
+        if col_i != 'TARGET':
+            df_train = df_train.drop([col_i],axis=1)
+            print(col_i)
         
 df_test.to_csv('df_test.csv',index=False)
 df_train.to_csv('df_train.csv',index=False)

@@ -7,15 +7,15 @@ Created on Fri Jun 22 00:00:34 2018
 
 import pandas as pd
     
-df_train = pd.read_csv('df_train_bureau.csv')
-df_bureau = pd.read_csv('df_bureau_decoded.csv')
+df_train = pd.read_csv('df_train.csv')
+df_bureau = pd.read_csv('df_bureau.csv')
 
 for col_i in df_bureau.columns[df_bureau.dtypes == 'object']:
     df_bureau[col_i] = df_bureau[col_i].factorize()[0]
 
-df_agg = df_bureau.groupby(['SK_ID_CURR'], axis=0)[df_bureau.columns[2:]].mean()
+df_agg = df_bureau.groupby(['SK_ID_CURR'], axis=0)[df_bureau.columns[2:]].sum()
 
-df_agg.columns = [x + "mean" for x in list(df_agg.columns)]
+#df_agg.columns = [x + "mean" for x in list(df_agg.columns)]
 
 df_train.index = df_train.SK_ID_CURR
 #df_bureau.index = df_bureau.SK_ID_CURR
@@ -31,7 +31,7 @@ df_train_2.to_csv('df_train_bureau.csv',index=False)
 
 #del df_train
 
-df_test = pd.read_csv('df_test_bureau.csv',encoding='iso-8859-1')
+df_test = pd.read_csv('df_test.csv',encoding='iso-8859-1')
 
 df_test.index = df_test.SK_ID_CURR
 
