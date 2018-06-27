@@ -140,7 +140,7 @@ def lgb_light():
     params = {
         'objective': 'binary',
         'boosting': 'dart',
-        'learning_rate': 0.1 ,
+        'learning_rate': 0.05 ,
         'verbose': 0,
         'num_leaves': 31,
         'bagging_fraction': 1,
@@ -151,7 +151,7 @@ def lgb_light():
         'feature_fraction_seed': 1,
         'max_bin': 255,
         'max_depth': -1,
-        'num_rounds': 1000,
+        'num_rounds': 4000,
         'metric' : 'auc',
         'gpu_use_dp': True,
         'save_binary': True,
