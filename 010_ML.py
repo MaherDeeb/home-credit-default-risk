@@ -19,8 +19,8 @@ import lightgbm as lgb
 #1.1. load the training set and the training lables
 def data_preprocessing(test_train_ration=0.05):
     
-    df_train = pd.read_csv('df_train_bureau.csv')
-    df_test = pd.read_csv('df_test_bureau.csv')
+    df_train = pd.read_csv('df_train_bureau_preapp.csv')
+    df_test = pd.read_csv('df_test_bureau_preapp.csv')
     
     df_train_decoded = df_train
     df_test_decoded= df_test
@@ -69,8 +69,8 @@ def model_train_RF():
     X_train = pd.read_csv('X_train.csv')
     y_train = pd.read_csv('y_train.csv', header = None)
     
-    X_train = X_train.fillna(-999999999)
-    y_train = y_train.fillna(-999999999)
+    X_train = X_train.fillna(-999)
+    y_train = y_train.fillna(-999)
         
     clf = RandomForestClassifier(n_estimators=200,max_depth=50,random_state=0,n_jobs=-1,class_weight='balanced')
     
@@ -81,8 +81,8 @@ def model_train_RF():
     X_test = pd.read_csv('x_cv.csv')
     y_test = pd.read_csv('y_cv.csv', header = None)
     
-    X_test = X_test.fillna(-999999999)
-    y_test = y_test.fillna(-999999999)     
+    X_test = X_test.fillna(-999)
+    y_test = y_test.fillna(-999)     
     
     print('test:',clf.score(X_test, y_test))
     
@@ -142,21 +142,21 @@ def lgb_light():
         'boosting': 'dart',
         'learning_rate': 0.1 ,
         'verbose': 0,
-        'num_leaves': 35,
-        'bagging_fraction': 0.95,
+        'num_leaves': 31,
+        'bagging_fraction': 1,
         'bagging_freq': 1,
         'bagging_seed': 1,
-        'feature_fraction': 0.5,
-        'min_data_in_leaf': 30,
+        'feature_fraction': 1,
+        'min_data_in_leaf': 20,
         'feature_fraction_seed': 1,
-        'max_bin': 256,
+        'max_bin': 255,
         'max_depth': -1,
-        'num_rounds': 2000,
+        'num_rounds': 1000,
         'metric' : 'auc',
         'gpu_use_dp': True,
         'save_binary': True,
-        'scale_pos_weight': 2,
-        'drop_rate': 0.02
+        #'scale_pos_weight': 2,
+        #'drop_rate': 0.02
     }
 
     model_f2 = lgb.train(params, train_set=d_train_final,  valid_sets=watchlist_final, verbose_eval=5)
@@ -267,7 +267,7 @@ def model_pred(clf):
 
 
     
-data_preprocessing(test_train_ration=0.1)
+#data_preprocessing(test_train_ration=0.2)
 
 #clf_rf, err_cv,y_rf_te=model_train_RF()
 model_f2,y_lgb_te2,err_cv_lgb2=lgb_light()
