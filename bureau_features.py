@@ -170,7 +170,7 @@ df_bureau.to_csv('df_bureau_decoded.csv',index=False)
 #df_bureau_test.to_csv('df_test_bureau.csv',index=False) 
 
 # =============================================================================
-# col_i=list(df_bureau.columns)
+col_i=list(df_bureau.columns)
 # 
 # for col in col_i:
 #     try:

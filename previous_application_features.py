@@ -16,12 +16,117 @@ import pandas as pd
 import numpy as np
 data_path = 'D:/000_Projects_2018/0002_Development/Kaggle/home-credit-default-risk/data/'
 
-def _extract_features(df):
+def _extract_features(df,df_train):
     
 # =============================================================================
     df_ohc = pd.get_dummies(df.NAME_CONTRACT_TYPE)
     df = pd.concat([df,df_ohc],axis = 1)
-#     
+    
+    df_ohc = pd.get_dummies(df.WEEKDAY_APPR_PROCESS_START)
+    df = pd.concat([df,df_ohc],axis = 1)
+    
+    df_ohc = pd.get_dummies(df.HOUR_APPR_PROCESS_START)
+    df = pd.concat([df,df_ohc],axis = 1)
+    
+    df['AMT_ANNUITY_not_given'] = (df.AMT_ANNUITY.isnull())*1
+    df['AMT_ANNUITY_0'] = (df.AMT_ANNUITY==0)*1
+    df.AMT_ANNUITY = df.AMT_ANNUITY.fillna(0)
+    df['AMT_ANNUITY_0_not_given'] = df['AMT_ANNUITY_not_given'] + df['AMT_ANNUITY_0']
+    df['AMT_ANNUITY_log'] = np.log(df.AMT_ANNUITY+1)
+    df['AMT_ANNUITY_0.5'] = np.sqrt(df.AMT_ANNUITY)
+    df['AMT_ANNUITY_2'] = np.square(df.AMT_ANNUITY/df.AMT_ANNUITY.max())
+    
+    df['AMT_APPLICATION_0'] = (df.AMT_APPLICATION==0)*1
+    df['AMT_APPLICATION_log'] = np.log(df.AMT_APPLICATION+1)
+    df['AMT_APPLICATION_0.5'] = np.sqrt(df.AMT_APPLICATION)
+    
+    df['AMT_ANNUITYvsAMT_APPLICATION'] = df.AMT_APPLICATION/(df.AMT_ANNUITY+1)
+    
+    df['AMT_CREDIT_0'] = (df.AMT_CREDIT==0)*1
+    df['AMT_CREDIT_log'] = np.log(df.AMT_CREDIT+1)
+    df['AMT_CREDIT_0.5'] = np.sqrt(df.AMT_CREDIT)
+    df['AMT_CREDIT_2'] = np.square(df.AMT_CREDIT/df.AMT_CREDIT.max())
+
+    df['AMT_ANNUITYvsAMT_CREDIT'] = df.AMT_CREDIT/(df.AMT_ANNUITY+1)
+    
+    df['AMT_CREDITvsAMT_APPLICATION'] = df.AMT_APPLICATION/(df.AMT_CREDIT+1)
+    df['AMT_CREDITvsAMT_APPLICATION_L'] = (df['AMT_CREDITvsAMT_APPLICATION']>1)*1
+    df['AMT_CREDITvsAMT_APPLICATION_S'] = (df['AMT_CREDITvsAMT_APPLICATION']<1)*1
+
+    df['AMT_DOWN_PAYMENT_not_given'] = (df.AMT_DOWN_PAYMENT.isnull())*1
+    df['AMT_DOWN_PAYMENT_0'] = (df.AMT_DOWN_PAYMENT==0)*1
+    df.AMT_DOWN_PAYMENT = df.AMT_DOWN_PAYMENT.fillna(0)
+    df['AMT_DOWN_PAYMENT_0_not_given'] = df['AMT_DOWN_PAYMENT_not_given'] + df['AMT_DOWN_PAYMENT_0']
+    df['AMT_DOWN_PAYMENT_log'] = np.log(df.AMT_DOWN_PAYMENT+1)
+    df['AMT_DOWN_PAYMENT_0.5'] = np.sqrt(df.AMT_DOWN_PAYMENT)
+    df['AMT_DOWN_PAYMENT_2'] = np.square(df.AMT_DOWN_PAYMENT/df.AMT_DOWN_PAYMENT.max())
+    
+    df['AMT_ANNUITYvsAMT_DOWN_PAYMENT'] = df.AMT_DOWN_PAYMENT/(df.AMT_ANNUITY+1)
+    df['AMT_ANNUITY-AMT_DOWN_PAYMENT'] = df.AMT_DOWN_PAYMENT+df.AMT_ANNUITY
+    df['AMT_CREDITvsAMT_DOWN_PAYMENT'] = df.AMT_DOWN_PAYMENT/(df.AMT_CREDIT+1)
+    df['AMT_APPLICATIONvsAMT_DOWN_PAYMENT'] = df.AMT_DOWN_PAYMENT/(df.AMT_APPLICATION+1)
+    
+    df['AMT_GOODS_PRICE_not_given'] = (df.AMT_GOODS_PRICE.isnull())*1
+    df['AMT_GOODS_PRICE_0'] = (df.AMT_GOODS_PRICE==0)*1
+    df.AMT_GOODS_PRICE = df.AMT_GOODS_PRICE.fillna(0)
+    df['AMT_GOODS_PRICE_0_not_given'] = df['AMT_GOODS_PRICE_not_given'] + df['AMT_GOODS_PRICE_0']
+    df['AMT_GOODS_PRICE_log'] = np.log(df.AMT_GOODS_PRICE+1)
+    df['AMT_GOODS_PRICE_0.5'] = np.sqrt(df.AMT_GOODS_PRICE)
+    df['AMT_GOODS_PRICE_2'] = np.square(df.AMT_GOODS_PRICE/df.AMT_GOODS_PRICE.max())
+
+    df['AMT_ANNUITYvsAMT_GOODS_PRICE'] = df.AMT_GOODS_PRICE/(df.AMT_ANNUITY+1)
+    df['AMT_CREDITvsAMT_GOODS_PRICE'] = df.AMT_GOODS_PRICE/(df.AMT_CREDIT+1)
+    df['AMT_APPLICATIONvsAMT_GOODS_PRICE'] = df.AMT_GOODS_PRICE/(df.AMT_APPLICATION+1)
+    df['AMT_DOWN_PAYMENTvsAMT_GOODS_PRICE'] = df.AMT_GOODS_PRICE/(df.AMT_DOWN_PAYMENT+1)
+    
+    df['weekend_p'] = ((df.WEEKDAY_APPR_PROCESS_START == 'SATURDAY') | (df.WEEKDAY_APPR_PROCESS_START == 'SUNDAY'))
+    dayOfWeek={'MONDAY':1, 'TUESDAY':2, 'WEDNESDAY':0, 'THURSDAY':-2, 'FRIDAY':-1, 'SATURDAY':0.25, 'SUNDAY':0.75}
+    df['weekday_p'] = df['WEEKDAY_APPR_PROCESS_START'].map(dayOfWeek)
+    
+    time_index = list(df.loc[df.HOUR_APPR_PROCESS_START >= 18,'weekday_p'].index)
+    df.loc[time_index,'period_p'] = 'evening'
+    time_index = list(df.loc[df.HOUR_APPR_PROCESS_START < 18,'weekday_p'].index)
+    df.loc[time_index,'period_p'] = 'afternoon'
+    time_index = list(df.loc[df.HOUR_APPR_PROCESS_START < 12,'weekday_p'].index)
+    df.loc[time_index,'period_p'] = 'morning'
+    time_index = list(df.loc[df.HOUR_APPR_PROCESS_START < 6,'weekday_p'].index)
+    df.loc[time_index,'period_p'] = 'night'
+    
+    df_ohc = pd.get_dummies(df.period_p)
+    df = pd.concat([df,df_ohc],axis = 1)
+    
+    df.FLAG_LAST_APPL_PER_CONTRACT = (df.FLAG_LAST_APPL_PER_CONTRACT =='Y')*1
+    df['flag_contract_flag_day_0'] = (df.FLAG_LAST_APPL_PER_CONTRACT==0)*1 + (df.NFLAG_LAST_APPL_IN_DAY==0)*1
+    
+    df['RATE_DOWN_PAYMENT_not_given'] = (df.RATE_DOWN_PAYMENT.isnull())*1
+    df['RATE_DOWN_PAYMENT_0'] = (df.RATE_DOWN_PAYMENT==0)*1
+    df.RATE_DOWN_PAYMENT = df.RATE_DOWN_PAYMENT.fillna(0)
+    df['RATE_DOWN_PAYMENT_0_not_given'] = df['RATE_DOWN_PAYMENT_not_given'] + df['RATE_DOWN_PAYMENT_0']
+    df['RATE_DOWN_PAYMENT_log'] = np.log(df.RATE_DOWN_PAYMENT+1)
+    df['RATE_DOWN_PAYMENT_0.5'] = np.sqrt(df.RATE_DOWN_PAYMENT)
+    df['RATE_DOWN_PAYMENT_2'] = np.square(df.RATE_DOWN_PAYMENT/df.RATE_DOWN_PAYMENT.max())
+    
+    df['RATE_INTEREST_PRIMARY_not_given'] = (df.RATE_INTEREST_PRIMARY.isnull())*1
+    df.RATE_INTEREST_PRIMARY = df.RATE_INTEREST_PRIMARY.fillna(0)
+    df['RATE_INTEREST_PRIMARY_log'] = np.log(df.RATE_INTEREST_PRIMARY+1)
+    df['RATE_INTEREST_PRIMARY_0.5'] = np.sqrt(df.RATE_INTEREST_PRIMARY)
+    df['RATE_INTEREST_PRIMARY_2'] = np.square(df.RATE_INTEREST_PRIMARY/df.RATE_INTEREST_PRIMARY.max())
+    
+    df['rate_INTEREST-DOWN'] = df.RATE_INTEREST_PRIMARY + df.RATE_DOWN_PAYMENT
+    df['rate_INTERESTvsDOWN'] = df.RATE_INTEREST_PRIMARY /(1+df.RATE_DOWN_PAYMENT)
+    
+    df['not_given'] = df.RATE_DOWN_PAYMENT_not_given + df.RATE_INTEREST_PRIMARY_not_given+df.AMT_GOODS_PRICE_not_given+ \
+    df.AMT_DOWN_PAYMENT_not_given + df.AMT_ANNUITY_0_not_given
+    
+    df_ohc = pd.get_dummies(df.NAME_CONTRACT_STATUS)
+    df = pd.concat([df,df_ohc],axis = 1)
+    
+    df_ohc = pd.get_dummies(df.NAME_CASH_LOAN_PURPOSE)
+    df = pd.concat([df,df_ohc],axis = 1)
+
+
+    
+#
 #     df_ohc = pd.get_dummies(df.CREDIT_CURRENCY) 
 #     df = pd.concat([df,df_ohc],axis = 1)
 #     
@@ -154,7 +259,7 @@ def _extract_features(df):
     
     #for col in col_i:
     
-    #print(abs(df_agg.corr().TARGET))
+   # print(abs(df_agg.corr().TARGET))
     #print(sum(abs(df_agg.corr().TARGET)))
 
     #df_agg=df_agg.drop(['TARGET'],axis=1)
@@ -165,11 +270,11 @@ def _extract_features(df):
     
     return df
 
-#df_train = pd.read_csv(data_path+'application_train.csv')
+df_train = pd.read_csv(data_path+'application_train.csv')
 
 df_preapp = pd.read_csv(data_path+'previous_application.csv')
 #
-df_preapp = _extract_features(df_preapp)
+df_preapp = _extract_features(df_preapp,df_train)
 
 df_preapp.to_csv('df_preapp_decoded.csv',index=False) 
 

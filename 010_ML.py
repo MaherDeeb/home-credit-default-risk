@@ -35,6 +35,14 @@ def data_preprocessing(test_train_ration=0.05):
         
     #df_train_decoded = df_train_decoded.groupby(['SK_ID_CURR'], axis=0)[df_train_decoded.columns].sum()
     #df_test_decoded = df_test_decoded.groupby(['SK_ID_CURR'], axis=0)[df_test_decoded.columns].sum()
+    
+    #df_corr = df_train_decoded.corr().sort_values(by=['TARGET'], ascending=False)
+    
+    #Col_df_corr = list(df_corr.index)
+    
+    #df_train_decoded_sorted = df_train_decoded[Col_df_corr]
+    #df_test_decoded_sorted = df_test_decoded[Col_df_corr]
+    
 
     Y_train = df_train_decoded['TARGET']
     SK_ID_CURR_test = df_test_decoded['SK_ID_CURR']
@@ -46,6 +54,9 @@ def data_preprocessing(test_train_ration=0.05):
     #df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','SK_ID_BUREAU','TARGET'],axis=1)
    # df_test_decoded = df_test_decoded.drop(['SK_ID_CURR','SK_ID_BUREAU'],axis=1)
     
+    
+    #df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','TARGET'],axis=1)
+    #df_test_decoded = df_test_decoded.drop(['SK_ID_CURR'],axis=1)
     
     df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','TARGET'],axis=1)
     df_test_decoded = df_test_decoded.drop(['SK_ID_CURR'],axis=1)
@@ -100,6 +111,8 @@ def lgb_light():
     X_test = pd.read_csv('x_cv.csv')
     y_test = pd.read_csv('y_cv.csv',header = None)
     
+    
+    
 # =============================================================================
 #     std_0 = X_train.std()
 #     
@@ -140,22 +153,22 @@ def lgb_light():
     params = {
         'objective': 'binary',
         'boosting': 'dart',
-        'learning_rate': 0.05 ,
+        'learning_rate': 0.1 ,
         'verbose': 0,
         'num_leaves': 31,
         'bagging_fraction': 1,
         'bagging_freq': 1,
         'bagging_seed': 1,
         'feature_fraction': 1,
-        'min_data_in_leaf': 20,
+        'min_data_in_leaf': 1,
         'feature_fraction_seed': 1,
         'max_bin': 255,
         'max_depth': -1,
-        'num_rounds': 4000,
+        'num_rounds': 2000,
         'metric' : 'auc',
         'gpu_use_dp': True,
         'save_binary': True,
-        #'scale_pos_weight': 2,
+        'scale_pos_weight': 2,
         #'drop_rate': 0.02
     }
 
@@ -267,7 +280,7 @@ def model_pred(clf):
 
 
     
-#data_preprocessing(test_train_ration=0.2)
+data_preprocessing(test_train_ration=0.2)
 
 #clf_rf, err_cv,y_rf_te=model_train_RF()
 model_f2,y_lgb_te2,err_cv_lgb2=lgb_light()

@@ -8,7 +8,7 @@ Created on Fri Jun 22 00:00:34 2018
 import pandas as pd
     
 df_train = pd.read_csv('df_train.csv')
-df_bureau = pd.read_csv('df_bureau.csv')
+df_bureau = pd.read_csv('df_bureau_decoded.csv')
 
 for col_i in df_bureau.columns[df_bureau.dtypes == 'object']:
     df_bureau[col_i] = df_bureau[col_i].factorize()[0]
