@@ -160,16 +160,16 @@ def lgb_light():
         'bagging_freq': 1,
         'bagging_seed': 1,
         'feature_fraction': 1,
-        'min_data_in_leaf': 1,
+        'min_data_in_leaf': 30,
         'feature_fraction_seed': 1,
         'max_bin': 255,
         'max_depth': -1,
-        'num_rounds': 2000,
+        'num_rounds': 375,
         'metric' : 'auc',
         'gpu_use_dp': True,
         'save_binary': True,
         'scale_pos_weight': 2,
-        #'drop_rate': 0.02
+        'drop_rate': 0.02
     }
 
     model_f2 = lgb.train(params, train_set=d_train_final,  valid_sets=watchlist_final, verbose_eval=5)
@@ -280,7 +280,7 @@ def model_pred(clf):
 
 
     
-data_preprocessing(test_train_ration=0.2)
+#data_preprocessing(test_train_ration=0.2)
 
 #clf_rf, err_cv,y_rf_te=model_train_RF()
 model_f2,y_lgb_te2,err_cv_lgb2=lgb_light()
