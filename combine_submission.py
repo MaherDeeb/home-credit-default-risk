@@ -8,7 +8,7 @@ Created on Sun Jun 24 22:02:44 2018
 import pandas as pd
 import datetime, time
 
-df_best_submit1 = pd.read_csv('1530145161_submit.csv')
+df_best_submit1 = pd.read_csv('1530171464_submit.csv')
 df_best_submit2 = pd.read_csv('1530063390_submit.csv')
 
 df_best_submit = df_best_submit1
