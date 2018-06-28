@@ -36,12 +36,13 @@ def data_preprocessing(test_train_ration=0.05):
     #df_train_decoded = df_train_decoded.groupby(['SK_ID_CURR'], axis=0)[df_train_decoded.columns].sum()
     #df_test_decoded = df_test_decoded.groupby(['SK_ID_CURR'], axis=0)[df_test_decoded.columns].sum()
     
-    #df_corr = df_train_decoded.corr().sort_values(by=['TARGET'], ascending=False)
+    df_corr = df_train_decoded.corr()
+    df_corr = df_corr.sort_values(by=['TARGET'], ascending=False)
     
-    #Col_df_corr = list(df_corr.index)
+    Col_df_corr = list(df_corr.index)
     
-    #df_train_decoded_sorted = df_train_decoded[Col_df_corr]
-    #df_test_decoded_sorted = df_test_decoded[Col_df_corr]
+    df_train_decoded_sorted = df_train_decoded[Col_df_corr]
+    df_test_decoded_sorted = df_test_decoded[Col_df_corr[1:]]
     
 
     Y_train = df_train_decoded['TARGET']
@@ -58,20 +59,20 @@ def data_preprocessing(test_train_ration=0.05):
     #df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','TARGET'],axis=1)
     #df_test_decoded = df_test_decoded.drop(['SK_ID_CURR'],axis=1)
     
-    df_train_decoded = df_train_decoded.drop(['SK_ID_CURR','TARGET'],axis=1)
-    df_test_decoded = df_test_decoded.drop(['SK_ID_CURR'],axis=1)
+    df_train_decoded_sorted = df_train_decoded_sorted.drop(['SK_ID_CURR','TARGET'],axis=1)
+    df_test_decoded_sorted = df_test_decoded_sorted.drop(['SK_ID_CURR'],axis=1)
     
     
     
     
-    x_train, x_cv, y_train, y_cv= train_test_split(df_train_decoded,Y_train,
+    x_train, x_cv, y_train, y_cv= train_test_split(df_train_decoded_sorted,Y_train,
                                                   test_size=test_train_ration,stratify=Y_train,random_state=0)
     
     x_train.to_csv('x_train.csv')
     x_cv.to_csv('x_cv.csv')
     y_train.to_csv('y_train.csv')
     y_cv.to_csv('y_cv.csv')
-    df_test_decoded.to_csv('df_test_decoded.csv')
+    df_test_decoded_sorted.to_csv('df_test_decoded.csv')
     SK_ID_CURR_test.to_csv('SK_ID_CURR_grouped.csv')
     
 
@@ -153,7 +154,7 @@ def lgb_light():
     params = {
         'objective': 'binary',
         'boosting': 'dart',
-        'learning_rate': 0.1 ,
+        'learning_rate': 0.01 ,
         'verbose': 0,
         'num_leaves': 31,
         'bagging_fraction': 1,
@@ -164,7 +165,7 @@ def lgb_light():
         'feature_fraction_seed': 1,
         'max_bin': 255,
         'max_depth': -1,
-        'num_rounds': 375,
+        'num_rounds': 10000,
         'metric' : 'auc',
         'gpu_use_dp': True,
         'save_binary': True,
