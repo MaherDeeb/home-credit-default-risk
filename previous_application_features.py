@@ -125,19 +125,41 @@ def _extract_features(df,df_train):
     df = pd.concat([df,df_ohc],axis = 1)
 
 
+    df['DAYS_DECISION_30'] = (df.DAYS_DECISION >= -30)*1
+    df['DAYS_DECISION_90'] = ((df.DAYS_DECISION >= -90) & (df.DAYS_DECISION < -30))*1
+    df['DAYS_DECISION_180'] = ((df.DAYS_DECISION >= -180) & (df.DAYS_DECISION < -90))*1
+    df['DAYS_DECISION_365'] = ((df.DAYS_DECISION >= -365) & (df.DAYS_DECISION < -180))*1
+    df['DAYS_DECISION_720'] = ((df.DAYS_DECISION >= -720) & (df.DAYS_DECISION < -365))*1
+    df['DAYS_DECISION_1400'] = ((df.DAYS_DECISION >= -1400) & (df.DAYS_DECISION < -720))*1
+    df['DAYS_DECISION_2800'] = ((df.DAYS_DECISION >= -2800) & (df.DAYS_DECISION < -1400))*1
+    df['DAYS_DECISION_L2800'] = (df.DAYS_DECISION < -2800)*1
     
-#
-#     df_ohc = pd.get_dummies(df.CREDIT_CURRENCY) 
-#     df = pd.concat([df,df_ohc],axis = 1)
-#     
-#     df['DAYS_CREDIT_30'] = (df.DAYS_CREDIT >= -30)*1
-#     df['DAYS_CREDIT_90'] = ((df.DAYS_CREDIT >= -90) & (df.DAYS_CREDIT < -30))*1
-#     df['DAYS_CREDIT_180'] = ((df.DAYS_CREDIT >= -180) & (df.DAYS_CREDIT < -90))*1
-#     df['DAYS_CREDIT_365'] = ((df.DAYS_CREDIT >= -365) & (df.DAYS_CREDIT < -180))*1
-#     df['DAYS_CREDIT_720'] = ((df.DAYS_CREDIT >= -720) & (df.DAYS_CREDIT < -365))*1
-#     df['DAYS_CREDIT_1400'] = ((df.DAYS_CREDIT >= -1400) & (df.DAYS_CREDIT < -720))*1
-#     df['DAYS_CREDIT_2800'] = ((df.DAYS_CREDIT >= -2800) & (df.DAYS_CREDIT < -1400))*1
-#     df['DAYS_CREDIT_L2800'] = (df.DAYS_CREDIT < -2800)*1
+    df_ohc = pd.get_dummies(df.NAME_PAYMENT_TYPE)
+    df = pd.concat([df,df_ohc],axis = 1)
+    
+    df_ohc = pd.get_dummies(df.CODE_REJECT_REASON)
+    df = pd.concat([df,df_ohc],axis = 1)
+    
+    df['NAME_TYPE_SUITE_not_given'] = (df.NAME_TYPE_SUITE.isnull())*1
+    df.NAME_TYPE_SUITE = df.NAME_TYPE_SUITE.fillna('not given')
+    
+    df_ohc = pd.get_dummies(df.NAME_TYPE_SUITE)
+    df = pd.concat([df,df_ohc],axis = 1)
+    
+    df_ohc = pd.get_dummies(df.NAME_CLIENT_TYPE)
+    df = pd.concat([df,df_ohc],axis = 1)
+    
+    df_ohc = pd.get_dummies(df.NAME_GOODS_CATEGORY)
+    df = pd.concat([df,df_ohc],axis = 1)
+    
+    df_ohc = pd.get_dummies(df.NAME_PORTFOLIO)
+    df = pd.concat([df,df_ohc],axis = 1)
+    
+    df['NFLAG_INSURED_ON_APPROVAL_not_given'] = (df.NFLAG_INSURED_ON_APPROVAL.isnull())*1
+    df.NFLAG_INSURED_ON_APPROVAL = df.NFLAG_INSURED_ON_APPROVAL.fillna(-1)
+
+    
+
 # 
 #     df['CREDIT_DAY_OVERDUE0'] = (df.CREDIT_DAY_OVERDUE == 0)*1
 #     df['CREDIT_DAY_OVERDUEvsDAYS_CREDIT'] = df.CREDIT_DAY_OVERDUE/(df.DAYS_CREDIT-1)

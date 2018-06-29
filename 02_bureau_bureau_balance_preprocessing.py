@@ -9,7 +9,7 @@ import pandas as pd
 
 data_path = 'D:/000_Projects_2018/0002_Development/Kaggle/home-credit-default-risk/data/'
 
-df_bureau = pd.read_csv(data_path+'bureau.csv')
+df_bureau = pd.read_csv('df_bureau_decoded.csv')
 
 df_bureau_balance = pd.read_csv(data_path+'bureau_balance.csv')
 

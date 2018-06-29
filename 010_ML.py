@@ -154,7 +154,7 @@ def lgb_light():
     params = {
         'objective': 'binary',
         'boosting': 'dart',
-        'learning_rate': 0.01 ,
+        'learning_rate': 0.05 ,
         'verbose': 0,
         'num_leaves': 31,
         'bagging_fraction': 1,
@@ -279,7 +279,6 @@ def model_pred(clf):
 #     
 # =============================================================================
 
-
     
 #data_preprocessing(test_train_ration=0.2)
 
@@ -287,6 +286,8 @@ def model_pred(clf):
 model_f2,y_lgb_te2,err_cv_lgb2=lgb_light()
 #clf_lda,y_lda_te=LDA()
 
+#model_f2.save_model('{}_model.txt'.format(str(round(time.mktime((datetime.datetime.now().timetuple()))))), 
+#                    num_iteration=model_f2.best_iteration)
 
 #y_sub_bin_rf=model_pred(clf_rf)
 y_sub_bin_2=model_pred(model_f2)
