@@ -23,12 +23,12 @@ df_train.index = df_train.SK_ID_CURR
 #df_bureau = df_bureau.drop(['SK_ID_CURR'],axis=1)
 
     
-df_train_1 = pd.concat([df_agg,df_train],axis=1)
+df_train_1 = pd.concat([df_agg[df_agg.columns[1:]],df_train],axis=1)
 df_train_2 = df_train_1.dropna(subset=['TARGET']) 
 
 df_train_2.to_csv('df_train_bureau_preapp_pos.csv',index=False) 
 
-#del df_train
+del df_train,df_train_1
 del df_bureau
 
 
@@ -36,10 +36,9 @@ df_test = pd.read_csv('df_test_bureau_preapp.csv',encoding='iso-8859-1')
 
 df_test.index = df_test.SK_ID_CURR
 
-df_test_1 = pd.concat([df_agg,df_test],axis=1)
+df_test_1 = pd.concat([df_agg[df_agg.columns[1:]],df_test],axis=1)
 del df_test
 del df_agg
-
 
 df_test_2 = df_test_1.dropna(subset=['SK_ID_CURR']) 
 del df_test_1

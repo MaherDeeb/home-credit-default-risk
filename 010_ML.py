@@ -168,33 +168,26 @@ def model_pred(clf):
     X_sub = pd.read_csv('df_test_decoded.csv',encoding='iso-8859-1')
 
     clf=model_f2
-    if clf!=model_f2:
-        X_sub = X_sub.fillna(-999999999)
+  
     df_id_submit = pd.read_csv('SK_ID_CURR_grouped.csv',encoding='iso-8859-1',header=None)
     y=clf.predict(X_sub)
 
     Y_submit=pd.DataFrame()
     Y_submit = pd.concat([df_id_submit[1], pd.DataFrame(y)], axis=1)
-    Y_submit.index =Y_submit[1] 
 # =============================================================================
     Y_submit.columns=['SK_ID_CURR','TARGET']
-    Y_submit=Y_submit.groupby(['SK_ID_CURR'])['TARGET'].mean()
     df_best_submit = pd.read_csv('1529870832_submit.csv')
-    df_best_submit.index = df_best_submit.SK_ID_CURR
-    df_best_submit = pd.concat([df_best_submit,Y_submit],axis=1)
-    df_best_submit.columns=['SK_ID_CURR','TARGET1','TARGET']
-    ix = df_best_submit[df_best_submit['TARGET'].isnull()].index.tolist()
-    df_best_submit.loc[ix,'TARGET'] = df_best_submit.loc[ix,'TARGET1']
-    df_best_submit = df_best_submit.drop(['TARGET1'],axis=1)
-    df_best_submit.to_csv('{}_submit.csv'.format(str(round(time.mktime((datetime.datetime.now().timetuple()))))),index=False)
+    Y_submit['SK_ID_CURR'] = df_best_submit.SK_ID_CURR
+    
+    Y_submit.to_csv('{}_submit.csv'.format(str(round(time.mktime((datetime.datetime.now().timetuple()))))),index=False)
 # =============================================================================
-    return df_best_submit
+    return Y_submit
 
 
 
 random_state = 0
 test_train_ration=0.2
-#data_preprocessing(test_train_ration,random_state)
+data_preprocessing(test_train_ration,random_state)
 model_f2,y_lgb_te2,err_cv_lgb2=lgb_light(random_state)
 y_sub_bin_2=model_pred(model_f2)
 
