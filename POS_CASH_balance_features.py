@@ -61,6 +61,12 @@ def _extract_features(df,df_train):
     for col_i in df.columns[df.dtypes == 'object']:
 #         
         df[col_i] = df[col_i].factorize()[0]
+        
+    for col_i in df.columns:
+        
+        if sum(df[col_i]) is None:
+            
+            df = df.drop([col_i],axis=1)
 #     
     Y_train = df_train.TARGET
     
@@ -77,6 +83,12 @@ def _extract_features(df,df_train):
     print(abs(df_agg.corr().TARGET))
     print(sum(abs(df_agg.corr().TARGET)))
 
+    return df
 
-    
-    
+df_train = pd.read_csv(data_path+'application_train.csv')
+
+df_POS = pd.read_csv(data_path+'POS_CASH_balance.csv')
+#
+df_POS = _extract_features(df_POS,df_train)
+
+df_POS.to_csv('df_POS_decoded.csv',index=False) 
