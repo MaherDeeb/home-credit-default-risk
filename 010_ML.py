@@ -185,7 +185,7 @@ def model_pred(clf):
 
 
 
-random_state = 1
+random_state = 2
 test_train_ration=0.2
 data_preprocessing(test_train_ration,random_state)
 model_f2,y_lgb_te2,err_cv_lgb2=lgb_light(random_state)
