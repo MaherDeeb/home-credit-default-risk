@@ -130,7 +130,7 @@ def lgb_light(random_state):
     params = {
         'objective': 'binary',
         'boosting': 'dart',
-        'learning_rate': 0.1 ,
+        'learning_rate': 0.01 ,
         'verbose': 0,
         'num_leaves': 31,
         'bagging_fraction': 1,
@@ -141,7 +141,7 @@ def lgb_light(random_state):
         'feature_fraction_seed': 1,
         'max_bin': 255,
         'max_depth': -1,
-        'num_rounds': 2000,
+        'num_rounds': 15000,
         'metric' : 'auc',
         'gpu_use_dp': True,
         'save_binary': True,
@@ -185,9 +185,9 @@ def model_pred(clf):
 
 
 
-random_state = 2
+random_state = 0
 test_train_ration=0.2
-data_preprocessing(test_train_ration,random_state)
+#data_preprocessing(test_train_ration,random_state)
 model_f2,y_lgb_te2,err_cv_lgb2=lgb_light(random_state)
 y_sub_bin_2=model_pred(model_f2)
 
