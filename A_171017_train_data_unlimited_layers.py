@@ -12,6 +12,7 @@ import tensorflow as tf
 from tensorflow.python.framework import ops
 #from map_features import *
 from sklearn.model_selection import train_test_split
+import datetime, time
 
 #==============================================================================
 # building the model that combines all important function together
@@ -38,26 +39,37 @@ def model(layers_dims,learning_rate = 0.000001,num_epochs = 1000, minibatch_size
         #X_train = hf['X_train'][:]
         #Y_train = hf['y_train'][:]  
 
-    X_train = pd.read_csv('X_train.csv')
-    y_train = pd.read_csv('y_train.csv',header = None)
-    x_test = pd.read_csv('x_cv.csv')
-    y_test = pd.read_csv('y_cv.csv',header = None)
+    X_train = pd.read_csv('x_train_sr0.csv')
+    y_train = pd.read_csv('y_train_sr0.csv',header = None)
+    x_test = pd.read_csv('x_cv_sr0.csv')
+    y_test = pd.read_csv('y_cv_sr0.csv',header = None)
     
-    std_0 = X_train.std()
+    col_consider = X_train.columns[1:111]
     
-    col_to_delete = list(X_train.columns[std_0==0])
+    X_train = X_train[col_consider]
+    x_test = x_test[col_consider]
     
-    for col_i in col_to_delete:
+    
+# =============================================================================
+#     col_to_delete = list(X_train.columns[std_0==0])
+#     
+#     for col_i in col_to_delete:
+#         
+#         X_train = X_train.drop([col_i],axis=1)
+#         x_test = x_test.drop([col_i],axis=1)
+# =============================================================================
         
-        X_train = X_train.drop([col_i],axis=1)
-        x_test = x_test.drop([col_i],axis=1)
-        
-    X_train = X_train.drop(['SK_ID_CURR'],axis=1)
-    x_test = x_test.drop(['SK_ID_CURR'],axis=1)
+# =============================================================================
+#     X_train = X_train.drop(['SK_ID_CURR'],axis=1)
+#     x_test = x_test.drop(['SK_ID_CURR'],axis=1)
+# =============================================================================
 
 
 
     X_train_norm = (X_train - X_train.mean())/(X_train.std())
+    mu_train =X_train.mean()
+    std_train = X_train.std()
+    
 
     
     X_cv_norm = (x_test - X_train.mean())/(X_train.std())
@@ -106,7 +118,7 @@ def model(layers_dims,learning_rate = 0.000001,num_epochs = 1000, minibatch_size
     accuracy1 = tf.reduce_mean(tf.cast(correct_prediction1, "float"))
     # Cost function: Add cost function to tensorflow graph
 
-    beta=0.001
+    beta=0.00001
     
     #cost = compute_cost(Z3, Y)
     #print(parameters['W1'])
@@ -118,7 +130,7 @@ def model(layers_dims,learning_rate = 0.000001,num_epochs = 1000, minibatch_size
     cost = tf.reduce_mean(compute_cost(Z3[0:n_y], Y) + beta * regularizer)
 
     global_step = tf.Variable(0, trainable=False)
-    starter_learning_rate = 0.01
+    starter_learning_rate = 0.0001
     #learning_rate_final = tf.train.exponential_decay(starter_learning_rate, global_step,
      #                                      500, 0.96, staircase=True)
 
@@ -208,12 +220,56 @@ def model(layers_dims,learning_rate = 0.000001,num_epochs = 1000, minibatch_size
         #print ("Train Accuracy:", accuracy.eval({X: X_train, Y: Y_train}))
         #print ("Test Accuracy:", accuracy.eval({X: X_test, Y: Y_test}))
         
-        return parameters
+        return parameters,layers_dims,col_consider,mu_train,std_train
 #==============================================================================
 # Run the tesnsorflow model    
 #==============================================================================
 
 layers_dims =  [145,50,25,1]
 
-parameters = model(layers_dims,num_epochs = 5000,minibatch_size = 18900)
+parameters,layers_dims,col_consider,mu_train,std_train = model(layers_dims,num_epochs = 10,minibatch_size = 18900)
+
+
+# =============================================================================
+# def predict_state0(parameters,X_test):
+#     
+#     with tf.Session() as sess:
+#         
+#         z_test = sess.run(forward_propagation(tf.cast(X_test, "float"), parameters,layers_dims))
+#         y_test_NN= sess.run(tf.sigmoid(tf.cast(z_test, "float")))
+#         
+#         return y_test_NN
+#  
+# =============================================================================
+
  
+ 
+def model_pred(parameters,layers_dims,col_consider,mu_train,std_train):
+    #X_train = pd.read_csv('X_train.csv')
+    X_sub = pd.read_csv('df_test_decoded.csv',encoding='iso-8859-1')
+    X_sub = X_sub[col_consider]
+    X_sub_norm = (X_sub-mu_train)/std_train
+    X_sub_norm = X_sub_norm.fillna(0)
+
+    X_sub = np.array(X_sub_norm)
+    X_sub = X_sub.T
+    
+    df_id_submit = pd.read_csv('SK_ID_CURR_grouped.csv',encoding='iso-8859-1',header=None)
+    with tf.Session() as sess:
+        
+        z_test = sess.run(forward_propagation(tf.cast(X_sub, "float"), parameters,layers_dims))
+        y= sess.run(tf.sigmoid(tf.cast(z_test, "float")))
+    
+    Y_submit=pd.DataFrame()
+    Y_submit = pd.concat([df_id_submit[1], pd.DataFrame(y.T)], axis=1)
+    # =============================================================================
+    Y_submit.columns=['SK_ID_CURR','TARGET']
+    df_best_submit = pd.read_csv('1529870832_submit.csv')
+    Y_submit['SK_ID_CURR'] = df_best_submit.SK_ID_CURR
+    
+    Y_submit.to_csv('{}_submit.csv'.format(str(round(time.mktime((datetime.datetime.now().timetuple()))))),index=False)
+    # =============================================================================
+    return Y_submit
+
+
+Y_submit = model_pred(parameters,layers_dims,col_consider,mu_train,std_train)
