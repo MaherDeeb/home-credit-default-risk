@@ -261,7 +261,7 @@ def model_pred(parameters,layers_dims,col_consider,mu_train,std_train):
         y= sess.run(tf.sigmoid(tf.cast(z_test, "float")))
     
     Y_submit=pd.DataFrame()
-    Y_submit = pd.concat([df_id_submit[1], pd.DataFrame(y.T)], axis=1)
+    Y_submit = pd.concat([df_id_submit[1], pd.DataFrame(1-y.T)], axis=1)
     # =============================================================================
     Y_submit.columns=['SK_ID_CURR','TARGET']
     df_best_submit = pd.read_csv('1529870832_submit.csv')
