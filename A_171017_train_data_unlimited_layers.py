@@ -44,7 +44,7 @@ def model(layers_dims,learning_rate = 0.000001,num_epochs = 1000, minibatch_size
     x_test = pd.read_csv('x_cv_sr0.csv')
     y_test = pd.read_csv('y_cv_sr0.csv',header = None)
     
-    col_consider = X_train.columns[1:111]
+    col_consider = X_train.columns[1:50]
     
     X_train = X_train[col_consider]
     x_test = x_test[col_consider]
@@ -227,7 +227,7 @@ def model(layers_dims,learning_rate = 0.000001,num_epochs = 1000, minibatch_size
 
 layers_dims =  [145,50,25,1]
 
-parameters,layers_dims,col_consider,mu_train,std_train = model(layers_dims,num_epochs = 10,minibatch_size = 18900)
+parameters,layers_dims,col_consider,mu_train,std_train = model(layers_dims,num_epochs = 400,minibatch_size = 18900)
 
 
 # =============================================================================
@@ -261,7 +261,7 @@ def model_pred(parameters,layers_dims,col_consider,mu_train,std_train):
         y= sess.run(tf.sigmoid(tf.cast(z_test, "float")))
     
     Y_submit=pd.DataFrame()
-    Y_submit = pd.concat([df_id_submit[1], pd.DataFrame(1-y.T)], axis=1)
+    Y_submit = pd.concat([df_id_submit[1], pd.DataFrame(y.T)], axis=1)
     # =============================================================================
     Y_submit.columns=['SK_ID_CURR','TARGET']
     df_best_submit = pd.read_csv('1529870832_submit.csv')
